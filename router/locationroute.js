@@ -20,15 +20,15 @@ locationroute.get("/:ip",async(req,res)=>{
       let {ip}=req.params
     
       let city=await redisClient.get(ip)
-      console.log(city)
+      console.log(city,"r")
       if(city){
-        res.send(city)
+        res.send({"city":city})
       }
       else{
 
         axios.get(`https://ipapi.co/${ip}/json/`)
         .then(function (response) {
-            console.log(response)
+            redisClient.set(ip,response.data.city,"EX",1000*60*6)
             res.send({"city":response.data.city})
           })
           .catch(function (error) {
